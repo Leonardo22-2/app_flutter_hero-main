@@ -24,7 +24,7 @@ class TelaInicial extends StatelessWidget {
         child: Column(
           mainAxisAlignment: .center,
           children: [
-            Image.asset("bolsonaro x dragao.jpg", width: 500),
+            Image.asset("bolsonaroxdragao.jpg", width: 1000),
             Text(
               'Caverna do Dragão',
               style: Theme.of(context).textTheme.headlineMedium,
