@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'tela_de_gameplay.dart' hide Navigator;
 
 class TelaJogoHeroi extends StatefulWidget {
   const TelaJogoHeroi({super.key});
@@ -41,21 +42,27 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () => escolhaHeroi("Guerreiro"),
+                    onPressed: () {
+                      escolhaHeroi("Guerreiro");
+                    },
                     child: const Text("Guerreiro"),
                   ),
 
                   const SizedBox(width: 10),
 
                   ElevatedButton(
-                    onPressed: () => escolhaHeroi("Ladino"),
+                    onPressed: () {
+                      escolhaHeroi("Ladino");
+                    },
                     child: const Text("Ladino"),
                   ),
 
                   const SizedBox(width: 10),
 
                   ElevatedButton(
-                    onPressed: () => escolhaHeroi("Mago"),
+                    onPressed: () {
+                      escolhaHeroi("Mago");
+                    },
                     child: const Text("Mago"),
                   ),
                 ],
@@ -65,25 +72,27 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
 
               // IMAGEM DO HERÓI
               if (urlImagem.isNotEmpty)
-                Image.network(
-                  urlImagem,
-                  width: 200,
-                  height: 250,
-                  fit: BoxFit.cover,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.network(
+                    urlImagem,
+                    width: 200,
+                    height: 250,
+                    fit: BoxFit.cover,
 
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.broken_image, size: 100);
-                  },
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.broken_image, size: 100);
+                    },
+                  ),
                 ),
 
               const SizedBox(height: 20),
 
-              // CARD COM AS INFORMAÇÕES
+              // INFORMAÇÕES DO HERÓI
               if (nomeHeroi.isNotEmpty)
                 Card(
                   elevation: 5,
                   color: Colors.grey[200],
-
                   child: Padding(
                     padding: const EdgeInsets.all(20),
 
@@ -92,6 +101,7 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
                         // NOME
                         Text(
                           "Nome: $nomeHeroi",
+                          textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -103,6 +113,7 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
                         // TÍTULO
                         Text(
                           "Título: $titulo",
+                          textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 20,
                             fontStyle: FontStyle.italic,
@@ -161,14 +172,28 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
                     ),
                   ),
                 ),
+
+              const SizedBox(height: 20),
+
+              // BOTÃO SELECIONAR
               ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => TelaIniciar()),
-                  );
-                },
-                child: Text('Entrar'),
+                onPressed: nomeHeroi.isEmpty
+                    ? null
+                    : () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TelaDeGameplay(
+                              heroi: nomeHeroi,
+                              imagem: urlImagem,
+                              vida: vida,
+                              moedas: moedas,
+                              poder: poder,
+                            ),
+                          ),
+                        );
+                      },
+                child: const Text("Selecionar", style: TextStyle(fontSize: 18)),
               ),
             ],
           ),
@@ -185,8 +210,8 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
         nomeHeroi = "Jair M. Bolsonaro";
         titulo = "O patriota caído";
 
-        vida = 200;
-        moedas = 2222;
+        vida = 150;
+        moedas = 2217;
         poder = 70;
         inteligencia = 50;
 
@@ -197,9 +222,9 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
         nomeHeroi = "Flávio Bolsonaro";
         titulo = "Son of Patriotsm";
 
-        vida = 100;
+        vida = 80;
         moedas = 222222;
-        poder = 150;
+        poder = 100;
         inteligencia = -1;
 
         urlImagem =
@@ -209,7 +234,7 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
         nomeHeroi = "Daniel Vorcaro";
         titulo = "O mago do dinheiro";
 
-        vida = 80;
+        vida = 50;
         moedas = 99999999;
         poder = 300;
         inteligencia = 1000;
