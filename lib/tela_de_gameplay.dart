@@ -47,7 +47,10 @@ class _TelaDeGameplayState extends State<TelaDeGameplay> {
         children: [
           // FUNDO
           Positioned.fill(
-            child: Image.asset("assets/caverna.png", fit: BoxFit.cover),
+            child: Image.asset(
+              "https://wallup.net/abstracto-bosque-fantasia-ruina-ciudad/",
+              fit: BoxFit.cover,
+            ),
           ),
 
           // INFORMAÇÕES DO HERÓI

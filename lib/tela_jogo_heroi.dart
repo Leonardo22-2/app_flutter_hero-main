@@ -189,6 +189,7 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
                               vida: vida,
                               moedas: moedas,
                               poder: poder,
+                              inteligencia: inteligencia,
                             ),
                           ),
                         );
