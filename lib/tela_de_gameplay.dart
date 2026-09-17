@@ -47,8 +47,8 @@ class _TelaDeGameplayState extends State<TelaDeGameplay> {
         children: [
           // FUNDO
           Positioned.fill(
-            child: Image.asset(
-              "https://wallup.net/abstracto-bosque-fantasia-ruina-ciudad/",
+            child: Image.network(
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDBWm31jaWt-tuAZx5f2-ZVA80ZWC2RSeCByRH33A3vMioH2bZeAIKNjs&s=10",
               fit: BoxFit.cover,
             ),
           ),
@@ -137,6 +137,25 @@ class _TelaDeGameplayState extends State<TelaDeGameplay> {
             child: ElevatedButton(
               onPressed: andarParaDireita,
               child: const Text("Direita ➡", style: TextStyle(fontSize: 18)),
+            ),
+          ),
+          // BOTÃO PULAR
+          Positioned(
+            bottom: 30,
+            left,
+            : MediaQuery.of(context).size.width / 2 - 50,
+            child: ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  miliss = 100;
+                });
+                Future.delayed(const Duration(milliseconds: 300), () {
+                  setState(() {
+                    miliss = 400;
+                  });
+                });
+              },
+              child: const Text("Pular ⬆", style: TextStyle(fontSize: 18)),
             ),
           ),
         ],
