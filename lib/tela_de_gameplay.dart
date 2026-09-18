@@ -46,10 +46,10 @@ class _TelaDeGameplayState extends State<TelaDeGameplay>
 
     controladorPulo = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 3000),
     );
 
-    animacaoPulo = Tween<double>(begin: 0, end: 180).animate(
+    animacaoPulo = Tween<double>(begin: 0, end: 150).animate(
       CurvedAnimation(parent: controladorPulo, curve: Curves.easeInOut),
     );
 
@@ -176,7 +176,7 @@ class _TelaDeGameplayState extends State<TelaDeGameplay>
           ),
 
           AnimatedPositioned(
-            duration: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 700),
             curve: Curves.easeOut,
 
             left: posicaoHorizontal,
