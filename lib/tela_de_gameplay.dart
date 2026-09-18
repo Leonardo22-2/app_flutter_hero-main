@@ -24,7 +24,10 @@ class TelaDeGameplay extends StatefulWidget {
 
 class _TelaDeGameplayState extends State<TelaDeGameplay> {
   double posicaoHorizontal = 40;
+  double alturaPulo = 0;
+
   int miliss = 200;
+  bool pulando = false;
 
   void andarParaDireita() {
     setState(() {
@@ -37,6 +40,36 @@ class _TelaDeGameplayState extends State<TelaDeGameplay> {
       if (posicaoHorizontal > 10) {
         posicaoHorizontal -= 40;
       }
+    });
+  }
+
+  void pular() {
+    // Impede de apertar várias vezes enquanto está pulando
+    if (pulando) return;
+
+    setState(() {
+      pulando = true;
+      alturaPulo = 180;
+      miliss = 300;
+    });
+
+    // Depois de subir, começa a descer
+    Future.delayed(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
+
+      setState(() {
+        alturaPulo = 0;
+        miliss = 300;
+      });
+
+      // Libera o próximo pulo
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        if (!mounted) return;
+
+        setState(() {
+          pulando = false;
+        });
+      });
     });
   }
 
@@ -60,7 +93,7 @@ class _TelaDeGameplayState extends State<TelaDeGameplay> {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.7),
+                color: Colors.black.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -104,9 +137,9 @@ class _TelaDeGameplayState extends State<TelaDeGameplay> {
           // PERSONAGEM
           AnimatedPositioned(
             duration: Duration(milliseconds: miliss),
-            curve: Curves.bounceIn,
+            curve: Curves.easeOut,
             left: posicaoHorizontal,
-            bottom: 120,
+            bottom: 120 + alturaPulo,
             child: Image.network(
               widget.imagem,
               height: 130,
@@ -130,6 +163,16 @@ class _TelaDeGameplayState extends State<TelaDeGameplay> {
             ),
           ),
 
+          // BOTÃO PULAR
+          Positioned(
+            bottom: 30,
+            left: MediaQuery.of(context).size.width / 2 - 50,
+            child: ElevatedButton(
+              onPressed: pular,
+              child: const Text("Pular ⬆", style: TextStyle(fontSize: 18)),
+            ),
+          ),
+
           // BOTÃO DIREITA
           Positioned(
             bottom: 30,
@@ -137,25 +180,6 @@ class _TelaDeGameplayState extends State<TelaDeGameplay> {
             child: ElevatedButton(
               onPressed: andarParaDireita,
               child: const Text("Direita ➡", style: TextStyle(fontSize: 18)),
-            ),
-          ),
-          // BOTÃO PULAR
-          Positioned(
-            bottom: 30,
-            left,
-            : MediaQuery.of(context).size.width / 2 - 50,
-            child: ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  miliss = 100;
-                });
-                Future.delayed(const Duration(milliseconds: 300), () {
-                  setState(() {
-                    miliss = 400;
-                  });
-                });
-              },
-              child: const Text("Pular ⬆", style: TextStyle(fontSize: 18)),
             ),
           ),
         ],
