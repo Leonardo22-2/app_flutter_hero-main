@@ -7,6 +7,7 @@ class TelaDeGameplay extends StatefulWidget {
   final int moedas;
   final int poder;
   final int inteligencia;
+  final double escala;
 
   const TelaDeGameplay({
     super.key,
@@ -16,61 +17,103 @@ class TelaDeGameplay extends StatefulWidget {
     required this.moedas,
     required this.poder,
     required this.inteligencia,
+    required this.escala,
   });
 
   @override
   State<TelaDeGameplay> createState() => _TelaDeGameplayState();
 }
 
-class _TelaDeGameplayState extends State<TelaDeGameplay> {
+class _TelaDeGameplayState extends State<TelaDeGameplay>
+    with SingleTickerProviderStateMixin {
+  // POSIÇÃO
   double posicaoHorizontal = 40;
-  double alturaPulo = 0;
 
-  int miliss = 200;
+  // PULO
+  double alturaPulo = 0;
   bool pulando = false;
 
-  void andarParaDireita() {
-    setState(() {
-      posicaoHorizontal += 40;
+  // DIREÇÃO
+  bool olhandoParaEsquerda = false;
+
+  // ANIMAÇÃO DO PULO
+  late AnimationController controladorPulo;
+  late Animation<double> animacaoPulo;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controladorPulo = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    animacaoPulo = Tween<double>(begin: 0, end: 180).animate(
+      CurvedAnimation(parent: controladorPulo, curve: Curves.easeInOut),
+    );
+
+    controladorPulo.addListener(() {
+      if (!mounted) return;
+
+      setState(() {
+        alturaPulo = animacaoPulo.value;
+      });
+    });
+
+    controladorPulo.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        // Depois de chegar no ponto mais alto,
+        // começa a voltar para o chão.
+        controladorPulo.reverse();
+      }
+
+      if (status == AnimationStatus.dismissed) {
+        setState(() {
+          alturaPulo = 0;
+          pulando = false;
+        });
+      }
     });
   }
 
+  @override
+  void dispose() {
+    controladorPulo.dispose();
+    super.dispose();
+  }
+
+  // ANDAR PARA DIREITA
+  void andarParaDireita() {
+    setState(() {
+      posicaoHorizontal += 40;
+
+      // Olha para a direita
+      olhandoParaEsquerda = false;
+    });
+  }
+
+  // ANDAR PARA ESQUERDA
   void andarParaEsquerda() {
     setState(() {
       if (posicaoHorizontal > 10) {
         posicaoHorizontal -= 40;
       }
+
+      // Olha para a esquerda
+      olhandoParaEsquerda = true;
     });
   }
 
+  // PULAR
   void pular() {
-    // Impede de apertar várias vezes enquanto está pulando
     if (pulando) return;
 
     setState(() {
       pulando = true;
-      alturaPulo = 180;
-      miliss = 300;
     });
 
-    // Depois de subir, começa a descer
-    Future.delayed(const Duration(milliseconds: 400), () {
-      if (!mounted) return;
-
-      setState(() {
-        alturaPulo = 0;
-        miliss = 300;
-      });
-
-      // Libera o próximo pulo
-      Future.delayed(const Duration(milliseconds: 1000), () {
-        if (!mounted) return;
-
-        setState(() {
-          pulando = false;
-        });
-      });
-    });
+    controladorPulo.forward(from: 0);
   }
 
   @override
@@ -78,7 +121,6 @@ class _TelaDeGameplayState extends State<TelaDeGameplay> {
     return Scaffold(
       body: Stack(
         children: [
-          // FUNDO
           Positioned.fill(
             child: Image.network(
               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDBWm31jaWt-tuAZx5f2-ZVA80ZWC2RSeCByRH33A3vMioH2bZeAIKNjs&s=10",
@@ -86,7 +128,6 @@ class _TelaDeGameplayState extends State<TelaDeGameplay> {
             ),
           ),
 
-          // INFORMAÇÕES DO HERÓI
           Positioned(
             top: 40,
             left: 20,
@@ -134,26 +175,48 @@ class _TelaDeGameplayState extends State<TelaDeGameplay> {
             ),
           ),
 
-          // PERSONAGEM
           AnimatedPositioned(
-            duration: Duration(milliseconds: miliss),
+            duration: const Duration(milliseconds: 200),
             curve: Curves.easeOut,
+
             left: posicaoHorizontal,
+
             bottom: 120 + alturaPulo,
-            child: Image.network(
-              widget.imagem,
-              height: 130,
-              errorBuilder: (context, error, stackTrace) {
-                return const Icon(
-                  Icons.broken_image,
-                  size: 100,
-                  color: Colors.white,
-                );
-              },
+
+            child: Transform.scale(
+              scale: widget.escala,
+              alignment: Alignment.bottomCenter,
+
+              child: Transform(
+                // Vira a imagem horizontalmente
+                alignment: Alignment.center,
+                transform: Matrix4.identity()
+                  ..scale(olhandoParaEsquerda ? -1.0 : 1.0, 1.0),
+
+                child: SizedBox(
+                  width: 150,
+                  height: 180,
+
+                  child: Image.asset(
+                    widget.imagem,
+
+                    fit: BoxFit.contain,
+
+                    alignment: Alignment.bottomCenter,
+
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.broken_image,
+                        size: 100,
+                        color: Colors.white,
+                      );
+                    },
+                  ),
+                ),
+              ),
             ),
           ),
 
-          // BOTÃO ESQUERDA
           Positioned(
             bottom: 30,
             left: 30,
@@ -163,7 +226,6 @@ class _TelaDeGameplayState extends State<TelaDeGameplay> {
             ),
           ),
 
-          // BOTÃO PULAR
           Positioned(
             bottom: 30,
             left: MediaQuery.of(context).size.width / 2 - 50,
@@ -173,7 +235,6 @@ class _TelaDeGameplayState extends State<TelaDeGameplay> {
             ),
           ),
 
-          // BOTÃO DIREITA
           Positioned(
             bottom: 30,
             right: 30,

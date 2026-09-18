@@ -20,6 +20,9 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
 
   String urlImagem = "";
 
+  // Tamanho individual de cada personagem
+  double escalaPersonagem = 1.0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,16 +77,18 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
 
                 // IMAGEM DO HERÓI
                 if (urlImagem.isNotEmpty)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Image.network(
-                      urlImagem,
-                      width: 200,
-                      height: 250,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.broken_image, size: 100);
-                      },
+                  Transform.scale(
+                    scale: escalaPersonagem,
+                    child: SizedBox(
+                      width: 250,
+                      height: 300,
+                      child: Image.asset(
+                        urlImagem,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.broken_image, size: 100);
+                        },
+                      ),
                     ),
                   ),
 
@@ -183,6 +188,7 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
                                 moedas: moedas,
                                 poder: poder,
                                 inteligencia: inteligencia,
+                                escala: escalaPersonagem,
                               ),
                             ),
                           );
@@ -200,7 +206,7 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
     );
   }
 
-  // FUNÇÃO PARA ESCOLHER O HERÓI
+  // ESCOLHER O HERÓI
   void escolhaHeroi(String tipoHeroi) {
     setState(() {
       switch (tipoHeroi) {
@@ -214,8 +220,8 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
           poder = 70;
           inteligencia = 50;
 
-          urlImagem =
-              "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Jair_Bolsonaro_2019_Portrait_%283x4_cropped_center%29.jpg/330px-Jair_Bolsonaro_2019_Portrait_%283x4_cropped_center%29.jpg";
+          urlImagem = "assets/lider.png";
+          escalaPersonagem = 1.0;
           break;
 
         case "Ladino":
@@ -223,13 +229,13 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
           nomeHeroi = "Flávio Bolsonaro";
           titulo = "Son of Patriotsm";
 
-          vida = 80;
+          vida = 70;
           moedas = 222222;
           poder = 100;
           inteligencia = -1;
 
-          urlImagem =
-              "https://ichef.bbci.co.uk/ace/ws/640/cpsprodpb/8d1a/live/f611e8b0-5566-11f1-ab55-37e8d4cd836a.jpg.webp";
+          urlImagem = "assets/ladino.png";
+          escalaPersonagem = 0.75;
           break;
 
         case "Mago":
@@ -237,13 +243,13 @@ class TelaJogoHeroiState extends State<TelaJogoHeroi> {
           nomeHeroi = "Daniel Vorcaro";
           titulo = "O mago do dinheiro";
 
-          vida = 50;
+          vida = 30;
           moedas = 99999999;
           poder = 300;
           inteligencia = 1000;
 
-          urlImagem =
-              "https://admin.cnnbrasil.com.br/wp-content/uploads/sites/12/2026/02/Daniel-Vorcaro.png?w=1000";
+          urlImagem = "assets/mago.png";
+          escalaPersonagem = 1.10;
           break;
       }
     });
